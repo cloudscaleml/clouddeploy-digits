@@ -75,7 +75,6 @@ def main(run, data_path, output_path, log_path, layer_width, batch_size, epochs,
     print('Done!')
 
     train_set = x_train.reshape((len(x_train), -1)) / 255.
-    test_set = x_test.reshape((len(x_test), -1)) / 255.
 
     info('Training')
 
@@ -107,7 +106,6 @@ def main(run, data_path, output_path, log_path, layer_width, batch_size, epochs,
     model.fit(train_set, y_train, 
             epochs=epochs, 
             batch_size=batch_size,
-            validation_data=(test_set, y_test), 
             callbacks=[logaml, checkpoint])
 
     model.summary()
@@ -116,6 +114,11 @@ def main(run, data_path, output_path, log_path, layer_width, batch_size, epochs,
     file_output = os.path.join(output_path, 'latest.hdf5')
     print('Serializing h5 model to:\n{}'.format(file_output))
     model.save(file_output)
+
+    info('Test')
+    test_set = x_test.reshape((len(x_test), -1)) / 255.
+    test_loss, test_acc = model.evaluate(test_set, y_test)
+    print('\nTest accuracy:', test_acc)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='scikit-learn MNIST')
